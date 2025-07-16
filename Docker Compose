@@ -1,0 +1,24 @@
+version: '3.8'
+services:
+  jaeger:
+    image: cr.jaegertracing.io/jaegertracing/jaeger:2.8.0
+    ports:
+      - "16686:16686" # Jaeger UI
+      - "4317:4317"   # OTLP gRPC
+      - "4318:4318"   # OTLP HTTP
+    networks:
+      - tracing-net
+
+  sample-service:
+    build: .
+    image: sample-service:latest
+    depends_on:
+      - jaeger
+    ports:
+      - "8080:8080"
+    networks:
+      - tracing-net
+
+networks:
+  tracing-net:
+    driver: bridge
